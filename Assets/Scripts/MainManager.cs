@@ -6,15 +6,22 @@ using UnityEngine.UI;
 
 public class MainManager : MonoBehaviour
 {
+
+    public static MainManager Instance;
+
     public Brick BrickPrefab;
     public int LineCount = 6;
     public Rigidbody Ball;
 
+    public Text highScoreText;
     public Text ScoreText;
+    public InputField nameEntry;
     public GameObject GameOverText;
     
     private bool m_Started = false;
     private int m_Points;
+    private int h_Score;
+    private string m_Name;
     
     private bool m_GameOver = false;
 
@@ -22,10 +29,16 @@ public class MainManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        WriteHighScore();
+        InitBricks();
+    }
+
+    void InitBricks()
+    {
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
-        
-        int[] pointCountArray = new [] {1,1,2,2,5,5};
+
+        int[] pointCountArray = new[] { 1, 1, 2, 2, 5, 5 };
         for (int i = 0; i < LineCount; ++i)
         {
             for (int x = 0; x < perLine; ++x)
@@ -45,6 +58,7 @@ public class MainManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 m_Started = true;
+                nameEntry.gameObject.SetActive(false);
                 float randomDirection = Random.Range(-1.0f, 1.0f);
                 Vector3 forceDir = new Vector3(randomDirection, 1, 0);
                 forceDir.Normalize();
@@ -62,15 +76,42 @@ public class MainManager : MonoBehaviour
         }
     }
 
+    public void NameInput(string name)
+    {
+        m_Name = nameEntry.text;
+        name = m_Name;
+    }
+
     void AddPoint(int point)
     {
         m_Points += point;
         ScoreText.text = $"Score : {m_Points}";
+
+        if (m_Points > h_Score)
+        {
+            h_Score = m_Points;
+            highScoreText.text = $"High Score : {h_Score} Name : {m_Name}";
+        }
     }
+
+    public void WriteHighScore()
+    {
+
+    }
+
 
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+        WriteHighScore();
     }
+
+    [System.Serializable]
+    class SaveData
+    {
+        public string bestName;
+        public int bestScore;
+    }
+
 }
