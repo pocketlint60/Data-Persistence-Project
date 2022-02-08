@@ -8,6 +8,7 @@ public class MainManager : MonoBehaviour
 {
 
     public static MainManager Instance;
+    public DataManager dManager;
 
     public Brick BrickPrefab;
     public int LineCount = 6;
@@ -20,8 +21,9 @@ public class MainManager : MonoBehaviour
     
     private bool m_Started = false;
     private int m_Points;
-    private int h_Score;
-    private string m_Name;
+    public int h_Score;
+    public string m_currentName;
+    public string m_bestName;
     
     private bool m_GameOver = false;
 
@@ -31,6 +33,7 @@ public class MainManager : MonoBehaviour
     {
         WriteHighScore();
         InitBricks();
+        dManager.LoadBest();
     }
 
     void InitBricks()
@@ -78,8 +81,8 @@ public class MainManager : MonoBehaviour
 
     public void NameInput(string name)
     {
-        m_Name = nameEntry.text;
-        name = m_Name;
+        m_currentName = nameEntry.text;
+        name = m_currentName;
     }
 
     void AddPoint(int point)
@@ -90,13 +93,14 @@ public class MainManager : MonoBehaviour
         if (m_Points > h_Score)
         {
             h_Score = m_Points;
-            highScoreText.text = $"High Score : {h_Score} Name : {m_Name}";
+            m_bestName = m_currentName;
+            WriteHighScore();
         }
     }
 
     public void WriteHighScore()
     {
-
+        highScoreText.text = $"High Score : {h_Score} Name : {m_bestName}";
     }
 
 
@@ -105,13 +109,6 @@ public class MainManager : MonoBehaviour
         m_GameOver = true;
         GameOverText.SetActive(true);
         WriteHighScore();
+        dManager.SaveBest();
     }
-
-    [System.Serializable]
-    class SaveData
-    {
-        public string bestName;
-        public int bestScore;
-    }
-
 }
